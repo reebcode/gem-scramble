@@ -1,0 +1,57 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  authUid   String?  @unique
+  username  String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Wallet balances in gems
+  gemBalance      Int @default(100) // Start with 100 free gems
+  bonusGems       Int @default(0)   // Bonus gems from promotions
+
+  // Relations
+  transactions    Transaction[]
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // deposit, withdrawal, bonus, prize, entry_fee
+  amount    Int      // positive for credits, negative for debits
+  currency  String   // gems, bonus_gems
+  createdAt DateTime @default(now())
+  note      String?
+
+  // Optional match/lobby reference
+  matchId   String?
+  lobbyType String?
+
+  @@unique([userId, matchId, type], name: "unique_user_match_type")
+}
+
+model CompletedMatch {
+  id            String   @id @default(uuid())
+  lobbyType     String   // "gems10", "gems30", "gems50", etc. (the game type)
+  entryFee      Int      // gems
+  prizePool     Int      // gems
+  gameDuration  Int      // seconds
+  status        String   // "completed", "cancelled", etc.
+  createdAt     DateTime // when match was created
+  startedAt     DateTime?
+  endedAt       DateTime
+  board         Json     // Store the board as JSON for replay
+  players       Json     // Array of players with scores, words, etc.
+
+  @@index([endedAt]) // For efficient querying by date
+}
+
