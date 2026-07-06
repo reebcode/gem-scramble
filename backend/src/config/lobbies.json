@@ -1,0 +1,88 @@
+{
+  "lobbies": [
+    {
+      "lobbyType": "gems10",
+      "name": "10 Gems Entry",
+      "entryFee": 10,
+      "boardSize": 4,
+      "gameDuration": 300,
+      "maxPlayers": 3,
+      "payoutMultipliers": [3, 1.5, 0.5],
+      "totalPrizeGems": 30,
+      "timeBonusPerSecond": 0.2,
+      "timeBonusMaxPoints": 60
+    },
+    {
+      "lobbyType": "gems30",
+      "name": "30 Gems Entry",
+      "entryFee": 30,
+      "boardSize": 4,
+      "gameDuration": 300,
+      "maxPlayers": 7,
+      "payoutMultipliers": [3, 1.5, 0.5],
+      "totalPrizeGems": 210,
+      "timeBonusPerSecond": 0.2,
+      "timeBonusMaxPoints": 60
+    },
+    {
+      "lobbyType": "gems50",
+      "name": "50 Gems Entry",
+      "entryFee": 50,
+      "boardSize": 4,
+      "gameDuration": 300,
+      "maxPlayers": 7,
+      "payoutMultipliers": [3, 1.5, 0.5],
+      "totalPrizeGems": 350,
+      "timeBonusPerSecond": 0.2,
+      "timeBonusMaxPoints": 60
+    },
+    {
+      "lobbyType": "gems100",
+      "name": "100 Gems Entry",
+      "entryFee": 100,
+      "boardSize": 4,
+      "gameDuration": 300,
+      "maxPlayers": 7,
+      "payoutMultipliers": [3, 1.5, 0.5],
+      "totalPrizeGems": 700,
+      "timeBonusPerSecond": 0.2,
+      "timeBonusMaxPoints": 60
+    },
+    {
+      "lobbyType": "gems200",
+      "name": "200 Gems Entry",
+      "entryFee": 200,
+      "boardSize": 4,
+      "gameDuration": 300,
+      "maxPlayers": 7,
+      "payoutMultipliers": [3, 1.5, 0.5],
+      "totalPrizeGems": 1400,
+      "timeBonusPerSecond": 0.2,
+      "timeBonusMaxPoints": 60
+    },
+    {
+      "lobbyType": "gems500",
+      "name": "500 Gems Entry",
+      "entryFee": 500,
+      "boardSize": 4,
+      "gameDuration": 300,
+      "maxPlayers": 7,
+      "payoutMultipliers": [3, 1.5, 0.5],
+      "totalPrizeGems": 3500,
+      "timeBonusPerSecond": 0.2,
+      "timeBonusMaxPoints": 60
+    },
+    {
+      "lobbyType": "gems1000",
+      "name": "1000 Gems Entry",
+      "entryFee": 1000,
+      "boardSize": 4,
+      "gameDuration": 300,
+      "maxPlayers": 7,
+      "payoutMultipliers": [3, 1.5, 0.5],
+      "totalPrizeGems": 7000,
+      "timeBonusPerSecond": 0.2,
+      "timeBonusMaxPoints": 60
+    }
+  ]
+}
