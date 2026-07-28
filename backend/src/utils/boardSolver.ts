@@ -56,3 +56,31 @@ export function countVowelsOnBoard(board: string[][]): number {
   }
   return n;
 }
+
+export type BoardWordStats = {
+  words: string[];
+  total: number;
+  len4Plus: number;
+  len5Plus: number;
+  len6Plus: number;
+};
+
+/** Sorted word list plus length tallies used for board quality and results. */
+export function getBoardWordStats(
+  board: string[][],
+  minLength = 3
+): BoardWordStats {
+  const found = findWordsOnBoard(board, minLength);
+  const words = [...found].sort(
+    (a, b) => a.length - b.length || a.localeCompare(b)
+  );
+  let len4Plus = 0;
+  let len5Plus = 0;
+  let len6Plus = 0;
+  for (const w of words) {
+    if (w.length >= 4) len4Plus++;
+    if (w.length >= 5) len5Plus++;
+    if (w.length >= 6) len6Plus++;
+  }
+  return { words, total: words.length, len4Plus, len5Plus, len6Plus };
+}

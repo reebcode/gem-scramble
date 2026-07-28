@@ -1,6 +1,6 @@
 import {
   countVowelsOnBoard,
-  findWordsOnBoard,
+  getBoardWordStats,
 } from "./boardSolver.js";
 
 /** Classic 16 Boggle dice. */
@@ -23,9 +23,12 @@ const BOGGLE_DICE: string[][] = [
   ["D", "E", "I", "L", "R", "X"],
 ];
 
+/** Enough words overall, with a spread of longer finds. */
 const MIN_VOWELS = 4;
-const MIN_WORDS = 25;
-const MIN_WORDS_LEN4 = 12;
+const MIN_WORDS = 30;
+const MIN_WORDS_LEN4 = 15;
+const MIN_WORDS_LEN5 = 6;
+const MIN_WORDS_LEN6 = 2;
 const MAX_ATTEMPTS = 50;
 
 function rollDiceBoard(size: number): string[][] {
@@ -54,28 +57,52 @@ function rollDiceBoard(size: number): string[][] {
   return grid;
 }
 
-/** Roll a board, re-rolling until it has enough common dictionary words. */
+function qualityScore(stats: {
+  total: number;
+  len4Plus: number;
+  len5Plus: number;
+  len6Plus: number;
+}): number {
+  // Prefer boards with both volume and longer words.
+  return (
+    stats.total +
+    stats.len4Plus * 2 +
+    stats.len5Plus * 4 +
+    stats.len6Plus * 8
+  );
+}
+
+function meetsQuality(stats: {
+  total: number;
+  len4Plus: number;
+  len5Plus: number;
+  len6Plus: number;
+}): boolean {
+  return (
+    stats.total >= MIN_WORDS &&
+    stats.len4Plus >= MIN_WORDS_LEN4 &&
+    stats.len5Plus >= MIN_WORDS_LEN5 &&
+    stats.len6Plus >= MIN_WORDS_LEN6
+  );
+}
+
+/** Roll a board, re-rolling until it has enough words across several lengths. */
 export function generateDiceBoard(size: number): string[][] {
   let best: string[][] | null = null;
-  let bestCount = -1;
+  let bestScore = -1;
 
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     const board = rollDiceBoard(size);
     if (countVowelsOnBoard(board) < MIN_VOWELS) continue;
 
-    const words = findWordsOnBoard(board, 3);
-    const wordCount = words.size;
-    let wordsLen4 = 0;
-    for (const w of words) {
-      if (w.length >= 4) wordsLen4++;
-    }
-
-    if (wordCount > bestCount) {
+    const stats = getBoardWordStats(board, 3);
+    const score = qualityScore(stats);
+    if (score > bestScore) {
       best = board;
-      bestCount = wordCount;
+      bestScore = score;
     }
 
-    if (wordCount >= MIN_WORDS && wordsLen4 >= MIN_WORDS_LEN4) {
+    if (meetsQuality(stats)) {
       return board;
     }
   }

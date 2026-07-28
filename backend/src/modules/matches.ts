@@ -2,6 +2,7 @@ import { Router, Request } from "express";
 import { z } from "zod";
 import { generateDiceBoard } from "../utils/board.js";
 import { canFormWordOnBoard } from "../utils/wordValidation.js";
+import { getBoardWordStats } from "../utils/boardSolver.js";
 import { InternalMatch, MatchPlayer } from "../state/match.interface.js";
 import { initDictionary, isWord } from "../services/dictionary.js";
 import { getLobbyConfig, LOBBIES } from "../config/lobbies.js";
@@ -553,6 +554,26 @@ router.get("/:matchId/details", async (req, res) => {
     // Return detailed match information
     const m = match as InternalMatch;
     const lobbyConfig = getLobbyConfig(m.lobbyType);
+
+    // Solution list only after the viewer has submitted (or match ended) — no spoilers mid-game.
+    const revealSolutions =
+      m.status === "completed" || Boolean(userPlayer.submittedAt);
+    let allPossibleWords: string[] | undefined;
+    let wordStats:
+      | { total: number; len4Plus: number; len5Plus: number; len6Plus: number }
+      | undefined;
+    if (revealSolutions && m.board) {
+      await initDictionary();
+      const stats = getBoardWordStats(m.board, 3);
+      allPossibleWords = stats.words;
+      wordStats = {
+        total: stats.total,
+        len4Plus: stats.len4Plus,
+        len5Plus: stats.len5Plus,
+        len6Plus: stats.len6Plus,
+      };
+    }
+
     const matchDetails = {
       matchId: m.id,
       lobbyId: m.lobbyType,
@@ -568,7 +589,11 @@ router.get("/:matchId/details", async (req, res) => {
       players: m.players.map((player: MatchPlayer) => ({
         id: player.id,
         name: player.name,
-        words: player.words,
+        // Only reveal other players' words once the match is completed
+        words:
+          player.id === user.id || m.status === "completed"
+            ? player.words
+            : [],
         score: player.score,
         joinedAt: player.joinedAt,
         submittedAt: player.submittedAt,
@@ -577,6 +602,8 @@ router.get("/:matchId/details", async (req, res) => {
         winnings: player.winnings,
         isCurrentUser: player.id === user.id,
       })),
+      allPossibleWords,
+      wordStats,
       // Calculate time remaining if match is still active
       timeRemaining:
         m.status === "completed"

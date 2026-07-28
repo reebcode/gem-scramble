@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../game/scramble_game.dart';
 import '../providers/game_session_provider.dart';
 import '../providers/wallet_provider.dart';
+import 'match_details_screen.dart';
 
 /// Renders the active game session. All match/timer/word state lives in
 /// [GameSessionProvider]; this widget only draws and dispatches intents.
@@ -109,6 +110,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
     final serverScore = result.valueOrNull ?? session.clientScore;
     final wordScore = updated?.myWordScore;
     final timeBonus = updated?.myTimeBonus;
+    final matchId = updated?.matchId ?? session.match?.matchId;
 
     await showDialog<void>(
       context: context,
@@ -130,19 +132,31 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                   ] else
                     Text('Your score: $serverScore'),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Next: see every valid word on this board.',
+                  ),
                 ],
               )
             : Text(result.errorOrNull ?? 'Please try again.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
+            child: Text(ok ? 'See all words' : 'OK'),
           ),
         ],
       ),
     );
 
-    if (mounted) {
+    if (!mounted) return;
+
+    if (ok && matchId != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => MatchDetailsScreen(matchId: matchId),
+        ),
+      );
+    } else {
       Navigator.of(context).pop();
     }
   }
