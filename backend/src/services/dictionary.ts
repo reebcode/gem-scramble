@@ -100,6 +100,7 @@ export async function initDictionary(): Promise<void> {
   for (const w of words) t.insert(w);
   trie = t;
   initialized = true;
+  console.log(`Dictionary loaded: ${words.length} words from ${p}`);
 }
 
 export function isWord(word: string): boolean {
